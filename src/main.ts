@@ -1,4 +1,3 @@
-import * as CryptoJS from 'crypto-js';
+import {printNewGenesisBlockInfo} from './blockchain';
 
-let message: string = 'Hello, World!';
-console.log(CryptoJS.SHA256(message).toString());
+printNewGenesisBlockInfo();
