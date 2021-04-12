@@ -28,11 +28,17 @@ const genesisBlock: Block = new Block(
 
 const genesisBlockString: string = JSON.stringify(genesisBlock);
 
-const blockchain: Block[] = [genesisBlock];
+let blockchain: Block[] = [genesisBlock];
 
 const getBlockchain = (): Block[] => blockchain;
 
 const getLatestBlock = (): Block => blockchain[blockchain.length - 1];
+
+const addBlock = (block: Block) => {
+    if (isValidNewBlock(block, getLatestBlock())) {
+        blockchain.push(block);
+    }
+}
 
 const generateNextBlock = (blockData: string) => {
     const previousBlock: Block = getLatestBlock();
@@ -40,6 +46,8 @@ const generateNextBlock = (blockData: string) => {
     const nextTimestamp: number = Date.now() / 1000 | 0;
     const nextHash: string = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, blockData);
     const newBlock: Block = new Block(nextIndex, nextHash, previousBlock.hash, nextTimestamp, blockData);
+    addBlock(newBlock);
+    //TODO: broadcast it
     return newBlock;
 };
 
@@ -96,6 +104,16 @@ const isValidChain = (blockchainToValidate: Block[]): boolean => {
         }
     }
     return true;
+}
+
+const replaceChain = (newBlockchain: Block[]) => {
+    if (isValidChain(newBlockchain) && newBlockchain.length > getBlockchain().length) {
+        console.log("Replacing chain");
+        blockchain = newBlockchain;
+        //TODO: broadcast
+    } else {
+        console.log("New blockchain is invalid");
+    }
 }
 
 export {Block, getBlockchain, getLatestBlock, generateNextBlock, printNewGenesisBlockInfo};
